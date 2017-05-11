@@ -91,7 +91,6 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
         vp_ad.addOnPageChangeListener(new PageChangeListenerImpl() {
             @Override
             public void onPageSelected(int position) {
-                setFocus();
                 currPosition = position;
             }
         });
@@ -118,11 +117,6 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
             sendEmptyMessageDelayed(1001, Constant.TIME_UNIT);
         }
     };
-
-    private void setFocus() {
-        vp_ad.setFocusable(false);
-        vp_ad.setFocusableInTouchMode(false);
-    }
 
     @Override
     public void onClick(View v) {
