@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!--拨号时的提示:将用户拨的号码显示出来-->
+    <EditText
+        android:id="@+id/et_dial_num"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:gravity="center"
+        android:maxLength="6"
+        android:padding="16dp"
+        android:text=""
+        android:textColor="@color/text_dark_gray"
+        android:textSize="100sp"
+        android:textStyle="bold|italic" />
+</LinearLayout>

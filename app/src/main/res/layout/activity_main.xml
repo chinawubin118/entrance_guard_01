@@ -1,18 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ruitu.entrance_guard.MainActivity">
+    android:background="@drawable/bg_blue_shadow"
+    android:orientation="horizontal"
+    tools:context="com.ruitu.entrance_guard.ui.activity.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:layout_weight="13"
+        android:background="@drawable/bk_white_8dp">
 
-</android.support.constraint.ConstraintLayout>
+        <include
+            android:id="@+id/ad_content"
+            layout="@layout/left_content" />
+
+        <include
+            android:id="@+id/dial_content"
+            layout="@layout/alert_dial"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!--<View style="@style/divider_vertical" />-->
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_weight="5">
+
+        <include layout="@layout/right_content" />
+    </FrameLayout>
+</LinearLayout>
