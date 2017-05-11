@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/arad/arad.iml" filepath="$PROJECT_DIR$/arad/arad.iml" />
       <module fileurl="file://$PROJECT_DIR$/entrance_system.iml" filepath="$PROJECT_DIR$/entrance_system.iml" />
     </modules>
   </component>

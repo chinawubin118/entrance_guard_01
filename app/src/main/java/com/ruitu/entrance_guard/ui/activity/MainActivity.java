@@ -6,31 +6,41 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.beanu.arad.base.ToolBarActivity;
 import com.ruitu.entrance_guard.Constant;
 import com.ruitu.entrance_guard.R;
 import com.ruitu.entrance_guard.impl.PageChangeListenerImpl;
+import com.ruitu.entrance_guard.model.bean.NoticeBean;
+import com.ruitu.entrance_guard.model.bean.WeatherBean;
+import com.ruitu.entrance_guard.mvp.contract.MainContract;
+import com.ruitu.entrance_guard.mvp.model.MainModelImpl;
+import com.ruitu.entrance_guard.mvp.presenter.MainPresenterImpl;
 import com.ruitu.entrance_guard.receiver.TimeChangeReceiver;
 import com.ruitu.entrance_guard.support.utils.AnimationUtils;
 import com.ruitu.entrance_guard.support.utils.TimeUtils;
 import com.ruitu.entrance_guard.support.utils.UiUtils;
+import com.ruitu.entrance_guard.support.utils.WeatherUtils;
 import com.ruitu.entrance_guard.ui.adapter.AdAdapter;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, TimeChangeReceiver.OnTimeChangeListener {
+public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelImpl>
+        implements MainContract.View, View.OnClickListener, TimeChangeReceiver.OnTimeChangeListener {
 
     private ViewPager vp_ad;//轮播广告
     private RelativeLayout rl_bg;//弹出来的公告(包含文字和背景)
     private TextView tv_state, tv_time, tv_date, tv_weekday;//在线状态,当前时间,日期,星期几
+    private TextView tv_city_name, tv_temp;//城市名,当前温度
+    private ImageView iv_weather_icon;//
+    private TextView tv_notice;//公告内容
     private View ad_content, dial_content;//广告和公告的布局,拨号时的布局
-    private EditText et_dial_num;//显示摁下的号码
+    private TextView et_dial_num;//显示摁下的号码
 
     //广告图片
     private int[] imgResIds = {R.mipmap.img_01, R.mipmap.img_02, R.mipmap.img_03};
@@ -51,16 +61,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tv_time = (TextView) findViewById(R.id.tv_time);
         tv_date = (TextView) findViewById(R.id.tv_date);
         tv_weekday = (TextView) findViewById(R.id.tv_weekday);
-        et_dial_num = (EditText) findViewById(R.id.et_dial_num);
+        tv_city_name = (TextView) findViewById(R.id.tv_city_name);
+        tv_temp = (TextView) findViewById(R.id.tv_temp);
+        tv_notice = (TextView) findViewById(R.id.tv_notice);
+        iv_weather_icon = (ImageView) findViewById(R.id.iv_weather_icon);
+        et_dial_num = (TextView) findViewById(R.id.et_dial_num);
         ad_content = findViewById(R.id.ad_content);
         dial_content = findViewById(R.id.dial_content);
 
-        initAndRegisterReceiver();
-
-        vp_ad.setAdapter(new AdAdapter(this, imgResIds));
+        initAndRegisterReceiver();//初始化和注册时间改变的监听
+        vp_ad.setAdapter(new AdAdapter(this, imgResIds));//设置轮播
 
         addListener();//派发事件监听
         executeLunbo();
+        mPresenter.getWeatherInfo();//获取心知天气信息
+        mPresenter.getNotice();//获取公告
     }
 
     //初始化并注册timeReceiver
@@ -118,8 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             showNotice();
         }
         if (v == tv_time) {
-            et_dial_num.setCursorVisible(false);//光标隐藏，提升用户的体验度
-
+//            et_dial_num.setCursorVisible(false);//光标隐藏，提升用户的体验度
             String oldStr = et_dial_num.getText().toString();
             ad_content.setVisibility(View.GONE);
             dial_content.setVisibility(View.VISIBLE);//显示拨号的布局
@@ -131,8 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         if (v == tv_date) {//s = s.Substring(0,s.Length - 1)
-            et_dial_num.setCursorVisible(false);//光标隐藏，提升用户的体验度
-
+//            et_dial_num.setCursorVisible(false);//光标隐藏，提升用户的体验度
             String oldStr = et_dial_num.getText().toString();
             if (!TextUtils.isEmpty(oldStr)) {
                 String newStr = oldStr.substring(0, oldStr.length() - 1);
@@ -151,6 +164,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void OnTimeChange(String currentTime, String currentDate, String currentWeekday) {
         setTimeToView(currentTime, currentDate, currentWeekday);
+
+        String hourNum = TimeUtils.getHourNum();
+        int hourNumInt = Integer.parseInt(hourNum);
+        switch (hourNumInt) {
+//            case 9:
+//                break;
+//            case 9:
+//                break;
+//            case 9:
+//                break;
+//            case 9:
+//                break;
+        }
     }
 
     //为视图设置时间
@@ -161,7 +187,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //显示公告
-    private void showNotice() {
+    @Override
+    public void showNotice() {
         if (rl_bg.getVisibility() != View.VISIBLE) {
             rl_bg.setVisibility(View.VISIBLE);
             AnimationUtils.AlphaAnimation(rl_bg, 0f, 1f, 200);
@@ -169,11 +196,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //隐藏公告
-    private void hideNotice() {
+    @Override
+    public void hideNotice() {
         if (rl_bg.getVisibility() != View.GONE) {
             rl_bg.setVisibility(View.GONE);
             AnimationUtils.AlphaAnimation(rl_bg, 1f, 0f, 200);
         }
+    }
+
+    //mvp/v中的方法
+    @Override
+    public void setWeatherInfo2View(WeatherBean weatherBean) {
+        try {
+            WeatherBean.ResultsBean.NowBean nowBean = weatherBean.getResults().get(0).getNow();
+            iv_weather_icon.setImageResource(WeatherUtils.getWeatherIcon(Integer.parseInt(nowBean.getCode())));
+            tv_temp.setText("当前温度:" + nowBean.getTemperature() + "℃");
+        } catch (Exception e) {//设置天气出现异常
+            iv_weather_icon.setImageResource(R.drawable.sunny);
+            tv_temp.setText("暂无温度数据");
+        }
+    }
+
+    @Override
+    public void setNoticeToView(NoticeBean noticeBean) {
+        tv_notice.setText(noticeBean.getNotice());
     }
 
     @Override

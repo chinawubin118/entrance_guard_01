@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.beanu.arad.utils.AndroidUtil;
+import com.makeramen.roundedimageview.RoundedImageView;
+
 /**
  * Created by wubin on 2017/5/10.
  */
@@ -31,9 +34,12 @@ public class AdAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        ImageView iv = new ImageView(activity.getApplicationContext());
+        RoundedImageView iv = new RoundedImageView(activity.getApplicationContext());
+
+//        ImageView iv = new ImageView(activity.getApplicationContext());
         iv.setImageResource(imgResIds[position]);
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        iv.setCornerRadius(AndroidUtil.dp2px(activity, 8));
 
         container.addView(iv);
         return iv;

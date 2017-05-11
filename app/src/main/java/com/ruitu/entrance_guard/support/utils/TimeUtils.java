@@ -43,4 +43,11 @@ public class TimeUtils {
     public static String getDate() {
         return new SimpleDateFormat("M.d").format(new Date());
     }
+
+    /**
+     * 获取时间的小时数
+     */
+    public static String getHourNum() {
+        return new SimpleDateFormat("H").format(new Date());
+    }
 }
