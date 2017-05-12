@@ -119,7 +119,12 @@ public class MainPresenterImpl extends MainContract.Presenter {
 
     @Override
     public void unlock() {
-        EPControl.EpControlUnlock();
+        EPControl.EpControlUnlock();//开锁
+    }
+
+    @Override
+    public void lock() {
+        EPControl.EpControlLock();//上锁
     }
 
     private Handler handler = new Handler() {
