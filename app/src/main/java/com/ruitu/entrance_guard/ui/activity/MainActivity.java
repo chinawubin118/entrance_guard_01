@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.ruitu.entrance_guard.support.utils.UiUtils;
 import com.ruitu.entrance_guard.support.utils.WeatherUtils;
 import com.ruitu.entrance_guard.ui.adapter.AdAdapter;
 
+import cn.semtec.www.epcontrol.EPControl;
 import cn.semtec.www.semteccardreaderlib.SerialPortActivity;
 
 import static cn.semtec.www.epcontrol.Util.bytesToHex;
@@ -103,8 +105,6 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         });
         rl_bg.setOnClickListener(this);
         tv_state.setOnClickListener(this);
-        tv_time.setOnClickListener(this);
-        tv_date.setOnClickListener(this);
         timeReceiver.setOnTimeChangeListener(this);
     }
 
@@ -128,6 +128,20 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
                 //下面两个应该是收到刷卡的数据的时候执行
                 case 0:
                     tv_card.setText(strToDisp);
+
+                    Log.i("wubin", "strToDisp = " + strToDisp);
+
+                    if (System.currentTimeMillis() % 2 == 0) {
+                        mPresenter.unlock();//执行解锁
+                        MyToast.showShortToast(mContext, "卡号是:" + strToDisp + "...解锁");
+                    } else {
+                        mPresenter.lock();//执行上锁
+                        MyToast.showShortToast(mContext, "卡号是:" + strToDisp + "...上锁");
+                    }
+
+                    Log.i("wubin", "当前门锁状态是:" + EPControl.GetLockStatus());//1，门关；0，门开
+                    //检测到门锁状态一直是开...待处理
+
                     break;
                 case 1:
                     tv_card.setText("请读卡");
@@ -143,12 +157,6 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         }
         if (v == tv_state) {
             showNotice();
-        }
-        if (v == tv_time) {
-
-        }
-        if (v == tv_date) {//s = s.Substring(0,s.Length - 1);// et_dial_num.setCursorVisible(false);//光标隐藏，提升用户的体验度
-
         }
     }
 
@@ -262,16 +270,12 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         return super.onKeyDown(keyCode, event);
     }
 
-    //测试按键的时候设置文本
-    private void setKey(String txt) {
-        tv_notice.setText(txt);
-    }
-
     private String strToDisp;
 
     @Override
     protected void onDataReceived(byte[] buffer, int size) {
         strToDisp = bytesToHex(buffer, size);
+
         handler.sendEmptyMessage(0);
         handler.sendEmptyMessageDelayed(1, 3000);
     }

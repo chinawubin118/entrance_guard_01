@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.InvalidParameterException;
 
 import cn.semtec.www.epcontrol.EPControl;
 import cn.semtec.www.epcontrol.Util;
@@ -31,13 +32,10 @@ public abstract class SerialPortActivity<T extends BasePresenter, E extends Base
     private ReadThread mReadThread;
     final String TAG = "CARD_READER";
 
-    //下面是wubin添加的属性
-    protected StringBuilder pressedKeys = new StringBuilder("");//用户按下的所有按键的组合
-
     //semtec card readerer 通信协议, total 12 bytes
     //protocol header 6bytes + card serial number 4bytes + checksum 1 bytes + ender 1 byte
     //RC522
-    
+
     /*private static class crp {
         private static final int len = 12;
         private static final byte[] header = {0x41, 0x54, 0x58, 0x5f, 0x02, 0x02};
@@ -45,6 +43,7 @@ public abstract class SerialPortActivity<T extends BasePresenter, E extends Base
         private static final int datalen = 4;
         private static final byte ender = 0x23;
     }*/
+
 
     //semtec type B card reader protocol,total 14bytes
     //Header 3 bytes + data type 1byte+ csn 8 bytes + checksum 1 byte + ender 1 byte
@@ -57,7 +56,7 @@ public abstract class SerialPortActivity<T extends BasePresenter, E extends Base
         private static final byte ender = 0x23;
     }
 
-    private long start_time, current_time;
+    private long start_time,current_time;
     private static final long timeout = 2000; //unit in ms
     private static byte[] cardDateBuf;
     protected static int cardDataBufSize;
@@ -67,52 +66,54 @@ public abstract class SerialPortActivity<T extends BasePresenter, E extends Base
         @Override
         public void run() {
             super.run();
-            while (!isInterrupted()) {
+            while(!isInterrupted()) {
                 int size;
                 try {
                     byte[] buffer = new byte[64];
                     if (mInputStream == null) return;
                     size = mInputStream.read(buffer);
-                    Log.e("sizesize", size + "===" + Util.bytesToHex(buffer, size));
+                    Log.e("sizesize", size+"==="+Util.bytesToHex(buffer, size));
                     if (size > 0) {
-                        if (cardDataBufSize == 0) {
+                        if(cardDataBufSize==0) {
                             start_time = System.currentTimeMillis();
-                        } else {
+                        }
+                        else{
                             current_time = System.currentTimeMillis();
-                            if (current_time - start_time > timeout) {
+                            if(current_time-start_time>timeout) {
                                 cardDataBufSize = 0;
                                 start_time = current_time;
-                                Log.i(TAG, "read buffer timeout");
+                                Log.i(TAG,"read buffer timeout");
                             }
                         }
-                        System.arraycopy(buffer, 0, cardDateBuf, cardDataBufSize, size);
-                        cardDataBufSize += size;
-                        if (cardDataBufSize == crp.len) {
+                        System.arraycopy(buffer,0,cardDateBuf,cardDataBufSize,size);
+                        cardDataBufSize+=size;
+                        if(cardDataBufSize==crp.len) {
                             cardDataBufSize = 0;
                             //verify header
                             boolean readyToSend = true;
-                            for (int i = 0; i < crp.header.length; i++) {
+                            for(int i =0;i<crp.header.length;i++) {
                                 if (cardDateBuf[i] != crp.header[i]) {
-                                    Log.i(TAG, "header is not match");
+                                    Log.i(TAG,"header is not match");
                                     readyToSend = false;
                                 }
                             }
                             //verify ender
-                            if (cardDateBuf[crp.len - 1] != crp.ender) {
-                                Log.i(TAG, "Ender is not match");
+                            if (cardDateBuf[crp.len-1] != crp.ender) {
+                                Log.i(TAG,"Ender is not match");
                                 readyToSend = false;
+
                             }
                             byte checkSum = 0;
-                            for (int i = 0; i < crp.datalen; i++) {
-                                checkSum += cardDateBuf[crp.header.length + crp.typelen + i];
+                            for(int i =0;i< crp.datalen;i++) {
+                                checkSum+=cardDateBuf[crp.header.length+crp.typelen+i];
                             }
-                            if (checkSum != cardDateBuf[crp.len - 2]) {
-                                Log.i(TAG, "checkSum is not match");
+                            if(checkSum != cardDateBuf[crp.len-2]) {
+                                Log.i(TAG,"checkSum is not match");
                                 readyToSend = false;
                             }
-                            if (readyToSend == true) {
-                                Log.i(TAG, "Sending card serial number");
-                                byte[] cardSerialNumber = new byte[crp.datalen + crp.typelen];
+                            if(readyToSend == true) {
+                                Log.i(TAG,"Sending card serial number");
+                                byte[] cardSerialNumber = new byte[crp.datalen+crp.typelen];
                                 System.arraycopy(cardDateBuf, 8, cardSerialNumber, 0, 4);
                                 onDataReceived(cardSerialNumber, 4);
 //                                System.arraycopy(cardDateBuf, crp.header.length, cardSerialNumber, 0, crp.datalen+crp.typelen);
@@ -147,8 +148,8 @@ public abstract class SerialPortActivity<T extends BasePresenter, E extends Base
         //mApplication = (Application) getApplication();
         try {
             //mSerialPort = mApplication.getSerialPort();
-            cardDateBuf = new byte[64];
-            cardDataBufSize = 0;
+            cardDateBuf=new byte[64];
+            cardDataBufSize =0;
             EPControl.EPSet485(0);
 //            String path = "/dev/ttyS3";
             String path = "/dev/ttyS1";
@@ -160,22 +161,17 @@ public abstract class SerialPortActivity<T extends BasePresenter, E extends Base
 			/* Create a receiving thread */
             mReadThread = new ReadThread();
             mReadThread.start();
-        } catch (Exception e) {
-
+        } catch (SecurityException e) {
+            //DisplayError(R.string.error_security);
+        } catch (IOException e) {
+            //DisplayError(R.string.error_unknown);
+        } catch (InvalidParameterException e) {
+            //DisplayError(R.string.error_configuration);
         }
-
-//        catch (SecurityException e) {
-//            //DisplayError(R.string.error_security);
-//        } catch (IOException e) {
-//            //DisplayError(R.string.error_unknown);
-//        } catch (InvalidParameterException e) {
-//            //DisplayError(R.string.error_configuration);
-//        }
     }
 
     /**
      * 往串口发送数据
-     *
      * @param mBuffer
      * @return
      */
@@ -183,7 +179,7 @@ public abstract class SerialPortActivity<T extends BasePresenter, E extends Base
         boolean result = true;
         String tail = "";
         byte[] tailBuffer = tail.getBytes();
-        byte[] mBufferTemp = new byte[mBuffer.length + tailBuffer.length];
+        byte[] mBufferTemp = new byte[mBuffer.length+tailBuffer.length];
         System.arraycopy(mBuffer, 0, mBufferTemp, 0, mBuffer.length);
         System.arraycopy(tailBuffer, 0, mBufferTemp, mBuffer.length, tailBuffer.length);
         try {
