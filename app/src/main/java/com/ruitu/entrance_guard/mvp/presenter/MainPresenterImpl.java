@@ -4,12 +4,17 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.beanu.arad.Arad;
+import com.beanu.arad.utils.AndroidUtil;
 import com.ruitu.entrance_guard.model.bean.NoticeBean;
+import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.model.bean.WeatherBean;
 import com.ruitu.entrance_guard.mvp.contract.MainContract;
+import com.ruitu.entrance_guard.support.utils.TimeUtils;
 
 import java.util.Date;
 
+import cn.semtec.www.epcontrol.EPControl;
 import rx.Subscriber;
 
 /**
@@ -20,7 +25,7 @@ public class MainPresenterImpl extends MainContract.Presenter {
 
     @Override
     public void getWeatherInfo() {
-        mRxManage.add(mModel.getWeatherInfo().subscribe(new Subscriber<WeatherBean>() {
+        mModel.getWeatherInfo().subscribe(new Subscriber<WeatherBean>() {
             @Override
             public void onCompleted() {
 
@@ -41,12 +46,12 @@ public class MainPresenterImpl extends MainContract.Presenter {
                 }
                 mView.setWeatherInfo2View(weatherBean);
             }
-        }));
+        });
     }
 
     @Override
     public void getNotice() {
-        mRxManage.add(mModel.getNotice()
+        mModel.getNotice()
                 .subscribe(new Subscriber<NoticeBean>() {
                     @Override
                     public void onCompleted() {
@@ -75,10 +80,46 @@ public class MainPresenterImpl extends MainContract.Presenter {
                                 mView.setNoticeToView(noticeBean);
 
                                 sendNewMessage(noticeBean);//隔一秒发送一个消息,检测公告是否过时
+//                                //到过期时直接发送一个消息,隐藏公告
+//                                handler.sendEmptyMessageDelayed(1003, noticeBean.getOutTime() - new Date().getTime());
                             }
                         }
                     }
-                }));
+                });
+    }
+
+    @Override
+    public void checkNewVersion() {
+        mModel.checkNewVersion()
+                .subscribe(new Subscriber<UpdateVersionBean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(UpdateVersionBean updateVersionBean) {
+                        if (null != updateVersionBean) {
+                            int currVersionCode = AndroidUtil.getVerCode(Arad.app);
+                            int newVersionCode = updateVersionBean.getCode();
+                            if (newVersionCode > currVersionCode) {//服务器上的版本>当前安装的版本,需要执行更新操作
+
+                            } else {//当前已是最新版本:隔一个小时检测是否有新版本
+                                handler.sendEmptyMessageDelayed(1004, TimeUtils.HOUR_AS_MILLIS);
+                            }
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void unlock() {
+        EPControl.EpControlUnlock();
     }
 
     private Handler handler = new Handler() {
@@ -92,6 +133,12 @@ public class MainPresenterImpl extends MainContract.Presenter {
                 } else {
                     sendNewMessage(noticeBean);//隔一秒发送一个消息,检测公告是否过时
                 }
+            }
+//            if (msg.what == 1003) {//收到了隐藏公告的消息
+//                mView.hideNotice();
+//            }
+            if (msg.what == 1004) {//收到检查新版本的消息
+                checkNewVersion();//继续检查是否有新版本
             }
         }
     };

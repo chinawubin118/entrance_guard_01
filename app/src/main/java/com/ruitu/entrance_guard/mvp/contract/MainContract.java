@@ -4,6 +4,7 @@ import com.beanu.arad.base.BaseModel;
 import com.beanu.arad.base.BasePresenter;
 import com.beanu.arad.base.BaseView;
 import com.ruitu.entrance_guard.model.bean.NoticeBean;
+import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.model.bean.WeatherBean;
 
 import rx.Observable;
@@ -21,17 +22,29 @@ public interface MainContract {
         void showNotice();//显示公告
 
         void hideNotice();//隐藏公告
+
+        void showPressedKeys(String newPressedKey);//显示按下的按键
+
+        void backSpace();//消除最后一个按下的数字
     }
 
     public abstract class Presenter extends BasePresenter<View, Model> {
         public abstract void getWeatherInfo();
 
         public abstract void getNotice();
+
+        public abstract void checkNewVersion();//获取版本更新信息
+
+        public abstract void unlock();//开锁:直接调用底层开锁
+
+        public abstract void lock();//上锁:直接调用底层上锁
     }
 
     public interface Model extends BaseModel {
         Observable<WeatherBean> getWeatherInfo();
 
         Observable<NoticeBean> getNotice();
+
+        Observable<UpdateVersionBean> checkNewVersion();//获取版本更新信息
     }
 }

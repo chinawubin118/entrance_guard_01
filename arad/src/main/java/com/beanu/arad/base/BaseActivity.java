@@ -1,5 +1,6 @@
 package com.beanu.arad.base;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,9 +29,14 @@ public class BaseActivity<T extends BasePresenter, E extends BaseModel> extends 
     ProgressHUD mProgressHUD;
     private SlideBackLayout mSlideBackLayout;
 
+    protected Context mContext;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mContext = this;
+
         mPresenter = TUtil.getT(this, 0);
         mModel = TUtil.getT(this, 1);
         if (mPresenter != null) {
@@ -66,7 +72,7 @@ public class BaseActivity<T extends BasePresenter, E extends BaseModel> extends 
         if (mSlideBackLayout == null) {
             initSlideBackLayout();
         }
-        if(mSlideBackLayout != null) {
+        if (mSlideBackLayout != null) {
             mSlideBackLayout.lock(false);
         }
     }

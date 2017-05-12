@@ -3,6 +3,7 @@ package com.ruitu.entrance_guard.mvp.model;
 import com.ruitu.entrance_guard.model.api.APIFactory;
 import com.ruitu.entrance_guard.model.api.APIRetrofit;
 import com.ruitu.entrance_guard.model.bean.NoticeBean;
+import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.model.bean.WeatherBean;
 import com.ruitu.entrance_guard.mvp.contract.MainContract;
 
@@ -28,6 +29,14 @@ public class MainModelImpl implements MainContract.Model {
     public Observable<NoticeBean> getNotice() {
         return APIFactory.getApiInstance()
                 .getNotice()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<UpdateVersionBean> checkNewVersion() {
+        return APIFactory.getApiInstance()
+                .checkMenjinNewVersion()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

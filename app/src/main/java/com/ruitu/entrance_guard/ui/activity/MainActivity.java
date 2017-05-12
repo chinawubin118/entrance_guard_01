@@ -7,12 +7,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.beanu.arad.base.ToolBarActivity;
 import com.ruitu.entrance_guard.Constant;
 import com.ruitu.entrance_guard.R;
 import com.ruitu.entrance_guard.impl.PageChangeListenerImpl;
@@ -23,22 +23,26 @@ import com.ruitu.entrance_guard.mvp.model.MainModelImpl;
 import com.ruitu.entrance_guard.mvp.presenter.MainPresenterImpl;
 import com.ruitu.entrance_guard.receiver.TimeChangeReceiver;
 import com.ruitu.entrance_guard.support.utils.AnimationUtils;
+import com.ruitu.entrance_guard.support.utils.KeyUtils;
+import com.ruitu.entrance_guard.support.utils.MyToast;
 import com.ruitu.entrance_guard.support.utils.TimeUtils;
 import com.ruitu.entrance_guard.support.utils.UiUtils;
 import com.ruitu.entrance_guard.support.utils.WeatherUtils;
 import com.ruitu.entrance_guard.ui.adapter.AdAdapter;
 
-import java.util.Random;
+import cn.semtec.www.semteccardreaderlib.SerialPortActivity;
 
-public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelImpl>
+import static cn.semtec.www.epcontrol.Util.bytesToHex;
+
+public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainModelImpl>
         implements MainContract.View, View.OnClickListener, TimeChangeReceiver.OnTimeChangeListener {
 
     private ViewPager vp_ad;//轮播广告
     private RelativeLayout rl_bg;//弹出来的公告(包含文字和背景)
     private TextView tv_state, tv_time, tv_date, tv_weekday;//在线状态,当前时间,日期,星期几
     private TextView tv_city_name, tv_temp;//城市名,当前温度
-    private ImageView iv_weather_icon;//
-    private TextView tv_notice;//公告内容
+    private ImageView iv_weather_icon;//天气图标
+    private TextView tv_notice, tv_card;//公告内容,刷卡的提示
     private View ad_content, dial_content;//广告和公告的布局,拨号时的布局
     private TextView et_dial_num;//显示摁下的号码
 
@@ -64,6 +68,7 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
         tv_city_name = (TextView) findViewById(R.id.tv_city_name);
         tv_temp = (TextView) findViewById(R.id.tv_temp);
         tv_notice = (TextView) findViewById(R.id.tv_notice);
+        tv_card = (TextView) findViewById(R.id.tv_card);
         iv_weather_icon = (ImageView) findViewById(R.id.iv_weather_icon);
         et_dial_num = (TextView) findViewById(R.id.et_dial_num);
         ad_content = findViewById(R.id.ad_content);
@@ -71,11 +76,13 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
 
         initAndRegisterReceiver();//初始化和注册时间改变的监听
         vp_ad.setAdapter(new AdAdapter(this, imgResIds));//设置轮播
+        hideNotice();//默认不显示通知
 
         addListener();//派发事件监听
         executeLunbo();
         mPresenter.getWeatherInfo();//获取心知天气信息
         mPresenter.getNotice();//获取公告
+        mPresenter.checkNewVersion();//检查新版本
     }
 
     //初始化并注册timeReceiver
@@ -109,12 +116,23 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            currPosition++;
-            if (currPosition >= imgResIds.length) {
-                currPosition = 0;
+            switch (msg.what) {
+                case 1001://广告轮播
+                    currPosition++;
+                    if (currPosition >= imgResIds.length) {
+                        currPosition = 0;
+                    }
+                    vp_ad.setCurrentItem(currPosition);
+                    sendEmptyMessageDelayed(1001, Constant.TIME_UNIT);
+                    break;
+                //下面两个应该是收到刷卡的数据的时候执行
+                case 0:
+                    tv_card.setText(strToDisp);
+                    break;
+                case 1:
+                    tv_card.setText("请读卡");
+                    break;
             }
-            vp_ad.setCurrentItem(currPosition);
-            sendEmptyMessageDelayed(1001, Constant.TIME_UNIT);
         }
     };
 
@@ -127,31 +145,10 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
             showNotice();
         }
         if (v == tv_time) {
-//            et_dial_num.setCursorVisible(false);//光标隐藏，提升用户的体验度
-            String oldStr = et_dial_num.getText().toString();
-            ad_content.setVisibility(View.GONE);
-            dial_content.setVisibility(View.VISIBLE);//显示拨号的布局
 
-            if (oldStr.length() < 6) {
-                StringBuilder sb = new StringBuilder(oldStr);
-                String tempNum = new Random().nextInt(9) + "";
-                et_dial_num.setText(sb.append(tempNum).toString());
-            }
         }
-        if (v == tv_date) {//s = s.Substring(0,s.Length - 1)
-//            et_dial_num.setCursorVisible(false);//光标隐藏，提升用户的体验度
-            String oldStr = et_dial_num.getText().toString();
-            if (!TextUtils.isEmpty(oldStr)) {
-                String newStr = oldStr.substring(0, oldStr.length() - 1);
-                et_dial_num.setText(newStr);
-            }
+        if (v == tv_date) {//s = s.Substring(0,s.Length - 1);// et_dial_num.setCursorVisible(false);//光标隐藏，提升用户的体验度
 
-            if (oldStr.length() > 1) {
-
-            } else {
-                ad_content.setVisibility(View.VISIBLE);
-                dial_content.setVisibility(View.GONE);//显示广告的布局
-            }
         }
     }
 
@@ -162,14 +159,7 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
         String hourNum = TimeUtils.getHourNum();
         int hourNumInt = Integer.parseInt(hourNum);
         switch (hourNumInt) {
-//            case 9:
-//                break;
-//            case 9:
-//                break;
-//            case 9:
-//                break;
-//            case 9:
-//                break;
+            //时间改变的时候
         }
     }
 
@@ -198,6 +188,34 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
         }
     }
 
+    //mvp/v中的方法:显示按下的按键
+    @Override
+    public void showPressedKeys(String newPressedKey) {
+        String oldStr = et_dial_num.getText().toString();
+        ad_content.setVisibility(View.GONE);
+        dial_content.setVisibility(View.VISIBLE);//显示拨号的布局
+
+        if (oldStr.length() < KeyUtils.MAX_LENGTH) {
+            StringBuilder sb = new StringBuilder(oldStr);
+            et_dial_num.setText(sb.append(newPressedKey).toString());
+        }
+    }
+
+    //mvp/v中的方法:消除最后一个按下的数字
+    @Override
+    public void backSpace() {
+        String oldStr = et_dial_num.getText().toString();
+        if (!TextUtils.isEmpty(oldStr)) {
+            String newStr = oldStr.substring(0, oldStr.length() - 1);
+            et_dial_num.setText(newStr);
+        }
+
+        if (oldStr.length() <= 1) {
+            ad_content.setVisibility(View.VISIBLE);
+            dial_content.setVisibility(View.GONE);//显示广告的布局
+        }
+    }
+
     //mvp/v中的方法
     @Override
     public void setWeatherInfo2View(WeatherBean weatherBean) {
@@ -213,7 +231,49 @@ public class MainActivity extends ToolBarActivity<MainPresenterImpl, MainModelIm
 
     @Override
     public void setNoticeToView(NoticeBean noticeBean) {
-        tv_notice.setText(noticeBean.getNotice());
+        try {
+            tv_notice.setText(noticeBean.getNotice());//设置公告到弹窗上
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        String dialContent = et_dial_num.getText().toString();
+        if (dialContent.length() < KeyUtils.MAX_LENGTH ||
+                keyCode == KeyUtils.XING_HAO_JIAN || keyCode == KeyUtils.JING_HAO_JIAN) {
+            KeyUtils.playVoiceByKeycode(keyCode, mContext);//没有达到四位数时,播放声音
+        }
+
+        if (keyCode == KeyUtils.XING_HAO_JIAN) {//按下的是"*"
+            backSpace();//执行回退操作
+            return super.onKeyDown(keyCode, event);
+        }
+        if (keyCode != KeyUtils.JING_HAO_JIAN) {//按下的不是井号键
+            String keyStr = KeyUtils.getKeyStrByKeycode(keyCode);
+            showPressedKeys(keyStr);
+        } else {//按下的是井号键
+            if (dialContent.length() < KeyUtils.MAX_LENGTH) {//拨号长度不够
+                MyToast.showShortToast(mContext, "请拨四位房间号码!");
+            } else {//可以进行拨号了
+                MyToast.showShortToast(mContext, "开始呼叫" + dialContent + ".....");
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    //测试按键的时候设置文本
+    private void setKey(String txt) {
+        tv_notice.setText(txt);
+    }
+
+    private String strToDisp;
+
+    @Override
+    protected void onDataReceived(byte[] buffer, int size) {
+        strToDisp = bytesToHex(buffer, size);
+        handler.sendEmptyMessage(0);
+        handler.sendEmptyMessageDelayed(1, 3000);
     }
 
     @Override

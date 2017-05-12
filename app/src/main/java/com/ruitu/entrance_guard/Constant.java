@@ -7,7 +7,9 @@ package com.ruitu.entrance_guard;
 public interface Constant {
     long TIME_UNIT = 2000;
 
-    //自己的服务器URL:ceshi.lianxinyi.com.cn/app/notice/getOneNotice
+    String BASE_URL = "http://ceshi.lianxinyi.com.cn/";
+
+    //自己的服务器URL:ceshi.lianxinyi.com.cn/app/
     String URL = "http://ceshi.lianxinyi.com.cn/app/";
 
     //https://api.seniverse.com/v3/weather/now.json?key=tyc5m2krtykod7bw&location=jinan&language=zh-Hans&unit=c

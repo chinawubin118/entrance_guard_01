@@ -10,10 +10,10 @@
         android:layout_height="match_parent"
         android:background="@null"
         android:gravity="center"
-        android:maxLength="6"
+        android:maxLength="4"
         android:padding="16dp"
         android:text=""
         android:textColor="@color/text_dark_gray"
-        android:textSize="100sp"
+        android:textSize="150sp"
         android:textStyle="bold|italic" />
 </LinearLayout>

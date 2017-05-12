@@ -3,6 +3,7 @@ package com.ruitu.entrance_guard.model.api;
 import com.google.gson.JsonObject;
 import com.ruitu.entrance_guard.model.PageModel;
 import com.ruitu.entrance_guard.model.bean.NoticeBean;
+import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.model.bean.User2;
 import com.ruitu.entrance_guard.model.bean.WeatherBean;
 
@@ -48,4 +49,20 @@ public interface ApiService {
      */
     @GET("notice/getOneNotice")
     Observable<NoticeBean> getNotice();
+
+    // 门禁版本检查/version/checkTwo
+    @GET("version/checkTwo")
+    Observable<UpdateVersionBean> checkMenjinNewVersion();
+
+    // 门禁获取最新版本/version/downTwo
+    @GET("version/downTwo")
+    Observable<NoticeBean> downMenjinNewVersion();
+
+    // 手机版本检查 /app/version/checkOne
+    @GET("version/checkOne")
+    Observable<NoticeBean> checkMobileNewVersion();
+
+    //手机版本更新/app/version/downOne
+    @GET("version/downOne")
+    Observable<NoticeBean> downMobileNewVersion();
 }

@@ -24,8 +24,6 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <!--<View style="@style/divider_vertical" />-->
-
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"

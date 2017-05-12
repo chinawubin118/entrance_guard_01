@@ -9,6 +9,8 @@ import java.util.Date;
  */
 
 public class TimeUtils {
+    public static final long HOUR_AS_MILLIS = 3600000L;
+
     /**
      * 获取当前日期是星期几
      */

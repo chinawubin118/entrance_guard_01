@@ -1,0 +1,135 @@
+//demo中的按键事件
+switch (status) {
+            case 0:
+                switch (keyCode) {
+                    case 8:
+                        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                        String sdk = android.os.Build.VERSION.SDK;
+                        Toast.makeText(MainActivity.this, currentapiVersion + "  " + sdk, Toast.LENGTH_SHORT).show();
+                        EPControl.EpControlLock();
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 9:
+                        EPControl.EpControlUnlock();
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 10:
+                        int result1 = EPControl.GetLockStatus();
+                        int result2 = EPControl.GetLightSensorStatus();
+                        String statu1 = "";
+                        String statu2 = "";
+                        if (result1 == 0) {
+                            statu1 = "(开)";
+                        } else {
+                            statu1 = "(关)";
+                        }
+                        if (result2 == 0) {
+                            statu2 = "(灭)";
+                        } else {
+                            statu2 = "(亮)";
+                        }
+                        Toast.makeText(this, "锁＝" + result1 + statu1 + "／灯＝" + result2 + statu2, Toast.LENGTH_SHORT).show();
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 11:
+                        EPControl.EPSetLED(1);
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 12:
+                        EPControl.EPSetLED(0);
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 13:
+                        EPControl.EPSet485(1);
+                        byte[] mBuffer = new byte[2];
+                        mBuffer[0] = 0x3f;
+                        mBuffer[1] = 0x0f;
+                        sendBuffer(mBuffer);
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 14:
+                        EPControl.EPSet485(0);
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 17:
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 18:
+                        status = 1;
+//                        left_ll.setBackgroundColor(Color.parseColor("#999999"));
+//                        right_ll.setBackgroundColor(Color.parseColor("#99ccff"));
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 1:
+                switch (keyCode) {
+                    case 7:
+                        setKey("0");
+                        Util.mediaPlay(R.raw.r1, mContext);
+                        break;
+                    case 8:
+                        setKey("1");
+                        Util.mediaPlay(R.raw.r1, mContext);
+                        break;
+                    case 9:
+                        setKey("2");
+                        Util.mediaPlay(R.raw.r2, mContext);
+                        break;
+                    case 10:
+                        setKey("3");
+                        Util.mediaPlay(R.raw.r3, mContext);
+                        break;
+                    case 11:
+                        setKey("4");
+                        Util.mediaPlay(R.raw.r4, mContext);
+                        break;
+                    case 12:
+                        setKey("5");
+                        Util.mediaPlay(R.raw.r5, mContext);
+                        break;
+                    case 13:
+                        setKey("6");
+                        Util.mediaPlay(R.raw.r6, mContext);
+                        break;
+                    case 14:
+                        setKey("7");
+                        Util.mediaPlay(R.raw.r7, mContext);
+                        break;
+                    case 15:
+                        setKey("8");
+                        Util.mediaPlay(R.raw.r8, mContext);
+                        break;
+                    case 16:
+                        setKey("9");
+                        Util.mediaPlay(R.raw.r9, mContext);
+                        break;
+                    case 17:
+                        status = 0;
+//                        right_ll.setBackgroundColor(Color.parseColor("#999999"));
+//                        left_ll.setBackgroundColor(Color.parseColor("#99ccff"));
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 18:
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 131:
+                        break;
+                    case 132:
+                        break;
+                    case 134:
+                        setKey("管理处");
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    case 133:
+                        setKey("语音");
+                        Util.mediaPlay(R.raw.rkey, mContext);
+                        break;
+                    default:
+                        break;
+                }
+            default:
+                break;
+        }
