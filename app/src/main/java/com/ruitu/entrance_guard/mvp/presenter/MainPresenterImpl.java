@@ -127,6 +127,11 @@ public class MainPresenterImpl extends MainContract.Presenter {
         EPControl.EpControlLock();//上锁
     }
 
+    @Override
+    public boolean isMenjinConnectSuccess() {
+        return EPControl.EpControlConnect() >= 0;
+    }
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

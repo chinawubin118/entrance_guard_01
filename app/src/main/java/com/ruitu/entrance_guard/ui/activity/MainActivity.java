@@ -85,6 +85,7 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         mPresenter.getWeatherInfo();//获取心知天气信息
         mPresenter.getNotice();//获取公告
         mPresenter.checkNewVersion();//检查新版本
+        handler.sendEmptyMessageDelayed(1005, 2000);//延迟2s检测是否连接成功
     }
 
     //初始化并注册timeReceiver
@@ -125,26 +126,22 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
                     vp_ad.setCurrentItem(currPosition);
                     sendEmptyMessageDelayed(1001, Constant.TIME_UNIT);
                     break;
+                case 1005:
+                    if (mPresenter.isMenjinConnectSuccess()) {//门禁连接成功
+                        MyToast.showShortToast(mContext, "连接成功");
+                    }
+                    break;
+
                 //下面两个应该是收到刷卡的数据的时候执行
                 case 0:
-                    tv_card.setText(strToDisp);
-
-                    Log.i("wubin", "strToDisp = " + strToDisp);
-
-                    if (System.currentTimeMillis() % 2 == 0) {
-                        mPresenter.unlock();//执行解锁
-                        MyToast.showShortToast(mContext, "卡号是:" + strToDisp + "...解锁");
-                    } else {
-                        mPresenter.lock();//执行上锁
-                        MyToast.showShortToast(mContext, "卡号是:" + strToDisp + "...上锁");
-                    }
+                    mPresenter.unlock();//执行解锁
+                    MyToast.showShortToast(mContext, "刷卡开锁成功!");
+                    KeyUtils.playVoiceByKeycode(KeyUtils.DOOR_IS_OPENED, mContext);
 
                     Log.i("wubin", "当前门锁状态是:" + EPControl.GetLockStatus());//1，门关；0，门开
-                    //检测到门锁状态一直是开...待处理
-
                     break;
                 case 1:
-                    tv_card.setText("请读卡");
+//                    tv_card.setText("请读卡");
                     break;
             }
         }

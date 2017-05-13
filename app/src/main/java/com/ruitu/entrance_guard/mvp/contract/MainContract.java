@@ -38,6 +38,8 @@ public interface MainContract {
         public abstract void unlock();//开锁:直接调用底层开锁
 
         public abstract void lock();//上锁:直接调用底层上锁
+
+        public abstract boolean isMenjinConnectSuccess();//是否连接成功(小于0,连接失败)
     }
 
     public interface Model extends BaseModel {

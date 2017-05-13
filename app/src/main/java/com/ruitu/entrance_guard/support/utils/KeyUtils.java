@@ -14,8 +14,9 @@ public class KeyUtils {
 
     public static final int MAX_LENGTH = 4;//最大按键长度
 
-    public static final int XING_HAO_JIAN = 17;
-    public static final int JING_HAO_JIAN = 18;
+    public static final int XING_HAO_JIAN = 17;//星号键
+    public static final int JING_HAO_JIAN = 18;//井号键
+    public static final int DOOR_IS_OPENED = 101;//门开了
 
     public static String getKeyStrByKeycode(int keyCode) {
         switch (keyCode) {
@@ -44,7 +45,7 @@ public class KeyUtils {
             case 18:
                 return "#";
         }
-        return "10";
+        return "*";
     }
 
     public static void playVoiceByKeycode(int keyCode, Context mContext) {
@@ -84,6 +85,9 @@ public class KeyUtils {
                 break;
             case 18:
                 Util.mediaPlay(R.raw.rkey, mContext);
+                break;
+            case DOOR_IS_OPENED://门开了
+                Util.mediaPlay(R.raw.openok, mContext);
                 break;
         }
     }
