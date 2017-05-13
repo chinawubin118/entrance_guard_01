@@ -46,6 +46,8 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
     private TextView tv_notice, tv_card;//公告内容,刷卡的提示
     private View ad_content, dial_content;//广告和公告的布局,拨号时的布局
     private TextView et_dial_num;//显示摁下的号码
+    private View red_state, green_state, gray_state;//三个状态圆圈
+    private TextView tv_state2;//在线状态
 
     //广告图片
     private int[] imgResIds = {R.mipmap.img_01, R.mipmap.img_02, R.mipmap.img_03};
@@ -72,8 +74,12 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         tv_card = (TextView) findViewById(R.id.tv_card);
         iv_weather_icon = (ImageView) findViewById(R.id.iv_weather_icon);
         et_dial_num = (TextView) findViewById(R.id.et_dial_num);
+        tv_state2 = (TextView) findViewById(R.id.tv_state2);
         ad_content = findViewById(R.id.ad_content);
         dial_content = findViewById(R.id.dial_content);
+        red_state = findViewById(R.id.red_state);
+        green_state = findViewById(R.id.green_state);
+        gray_state = findViewById(R.id.gray_state);
 
         initAndRegisterReceiver();//初始化和注册时间改变的监听
         vp_ad.setAdapter(new AdAdapter(this, imgResIds));//设置轮播
@@ -219,6 +225,34 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         if (oldStr.length() <= 1) {
             ad_content.setVisibility(View.VISIBLE);
             dial_content.setVisibility(View.GONE);//显示广告的布局
+        }
+    }
+
+    /**
+     * @param stateCode 1在线 2离线 3异常
+     */
+    @Override
+    public void setOnlineState(int stateCode) {
+        switch (stateCode) {
+            case 1://在线
+                red_state.setVisibility(View.GONE);
+                gray_state.setVisibility(View.GONE);
+                green_state.setVisibility(View.VISIBLE);
+                tv_state2.setText("(在线)");
+                break;
+            case 2://不在线
+                red_state.setVisibility(View.GONE);
+                gray_state.setVisibility(View.VISIBLE);
+                green_state.setVisibility(View.GONE);
+                tv_state2.setText("(离线)");
+                break;
+            case 3://其他:显示红灯
+                red_state.setVisibility(View.VISIBLE);
+                gray_state.setVisibility(View.GONE);
+                green_state.setVisibility(View.GONE);
+                tv_state2.setText("(异常)");
+                break;
+
         }
     }
 

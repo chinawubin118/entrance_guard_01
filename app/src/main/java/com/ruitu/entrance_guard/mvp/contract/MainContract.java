@@ -26,6 +26,8 @@ public interface MainContract {
         void showPressedKeys(String newPressedKey);//显示按下的按键
 
         void backSpace();//消除最后一个按下的数字
+
+        void setOnlineState(int stateCode);//根据状态码更新界面上的显示状态:1 在线 2 不在线 3 其他
     }
 
     public abstract class Presenter extends BasePresenter<View, Model> {

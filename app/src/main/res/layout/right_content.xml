@@ -29,22 +29,33 @@
                 android:textSize="16sp" />
 
             <View
+                android:id="@+id/red_state"
                 android:layout_width="@dimen/online_state_size"
                 android:layout_height="@dimen/online_state_size"
                 android:layout_marginLeft="16dp"
                 android:background="@drawable/online_state_red" />
 
             <View
+                android:id="@+id/green_state"
                 android:layout_width="@dimen/online_state_size"
                 android:layout_height="@dimen/online_state_size"
                 android:layout_marginLeft="16dp"
                 android:background="@drawable/online_state_green" />
 
             <View
+                android:id="@+id/gray_state"
                 android:layout_width="@dimen/online_state_size"
                 android:layout_height="@dimen/online_state_size"
                 android:layout_marginLeft="16dp"
                 android:background="@drawable/online_state_gray" />
+
+            <TextView
+                android:id="@+id/tv_state2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:text="(在线)"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <TextView
