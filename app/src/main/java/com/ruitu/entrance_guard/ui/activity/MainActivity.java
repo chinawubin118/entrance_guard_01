@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -131,14 +130,16 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
                         MyToast.showShortToast(mContext, "连接成功");
                     }
                     break;
+                case 1006:
+                    EPControl.EpControlLock();//开锁后自动锁门
+                    break;
 
                 //下面两个应该是收到刷卡的数据的时候执行
                 case 0:
                     mPresenter.unlock();//执行解锁
-                    MyToast.showShortToast(mContext, "刷卡开锁成功!");
+                    MyToast.showShortToast(mContext, "刷卡开门成功!");
                     KeyUtils.playVoiceByKeycode(KeyUtils.DOOR_IS_OPENED, mContext);
-
-                    Log.i("wubin", "当前门锁状态是:" + EPControl.GetLockStatus());//1，门关；0，门开
+                    handler.sendEmptyMessageDelayed(1006, KeyUtils.AUTO_LOCK_TIME);
                     break;
                 case 1:
 //                    tv_card.setText("请读卡");

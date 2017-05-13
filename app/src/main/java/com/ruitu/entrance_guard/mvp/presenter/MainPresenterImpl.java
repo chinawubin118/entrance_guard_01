@@ -20,7 +20,6 @@ import rx.Subscriber;
 /**
  * Created by wubin on 2017/05/11
  */
-
 public class MainPresenterImpl extends MainContract.Presenter {
 
     @Override
@@ -28,12 +27,10 @@ public class MainPresenterImpl extends MainContract.Presenter {
         mModel.getWeatherInfo().subscribe(new Subscriber<WeatherBean>() {
             @Override
             public void onCompleted() {
-
             }
 
             @Override
             public void onError(Throwable e) {
-
             }
 
             @Override
@@ -63,10 +60,7 @@ public class MainPresenterImpl extends MainContract.Presenter {
 
                     @Override
                     public void onNext(NoticeBean noticeBean) {
-                        Log.i("http", "请求继续:onError:");//
                         if (null != noticeBean) {
-                            Log.i("http", "noticeBean.getNotice() = " + noticeBean.getNotice());
-
                             try {
                                 long outTime = noticeBean.getOutTime();
                             } catch (Exception e) {//用于异常检测(一旦获取过期时间异常,说明后台返回的时间有问题,自己设置一个)
@@ -94,12 +88,10 @@ public class MainPresenterImpl extends MainContract.Presenter {
                 .subscribe(new Subscriber<UpdateVersionBean>() {
                     @Override
                     public void onCompleted() {
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
                     }
 
                     @Override
