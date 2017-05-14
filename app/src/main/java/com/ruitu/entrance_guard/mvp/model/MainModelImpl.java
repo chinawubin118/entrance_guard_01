@@ -65,7 +65,7 @@ public class MainModelImpl implements MainContract.Model {
     @Override
     public Observable<DeviceBean> getDeviceIdByMac() {//根据mac获取设备id
         return APIFactory.getApiInstance()
-                .getDeviceIdByMac(AndroidUtil.getLocalMacAddressFromWifiInfo(Arad.app))
+                .getDeviceIdByMac(AndroidUtil.getLocalMacAddressFromIp(Arad.app))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io());
     }
