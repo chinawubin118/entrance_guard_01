@@ -3,6 +3,7 @@ package com.ruitu.entrance_guard.mvp.contract;
 import com.beanu.arad.base.BaseModel;
 import com.beanu.arad.base.BasePresenter;
 import com.beanu.arad.base.BaseView;
+import com.ruitu.entrance_guard.model.bean.Card;
 import com.ruitu.entrance_guard.model.bean.NoticeBean;
 import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.model.bean.WeatherBean;
@@ -12,7 +13,6 @@ import rx.Observable;
 /**
  * Created by wubin on 2017/5/11.
  */
-
 public interface MainContract {
     public interface View extends BaseView {
         void setWeatherInfo2View(WeatherBean weatherBean);//将天气数据设置到view上
@@ -42,6 +42,10 @@ public interface MainContract {
         public abstract void lock();//上锁:直接调用底层上锁
 
         public abstract boolean isMenjinConnectSuccess();//是否连接成功(小于0,连接失败)
+
+        public abstract void submitDeviceInfo();//提交设备信息到服务端
+
+        public abstract void getCardList();//获取所有能用的卡
     }
 
     public interface Model extends BaseModel {
@@ -50,5 +54,9 @@ public interface MainContract {
         Observable<NoticeBean> getNotice();
 
         Observable<UpdateVersionBean> checkNewVersion();//获取版本更新信息
+
+        Observable<BaseModel> submitDeviceInfo();//提交设备信息都服务端
+
+        Observable<Card> getCardList();//获取所有能用的卡
     }
 }

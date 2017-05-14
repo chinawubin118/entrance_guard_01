@@ -27,10 +27,12 @@ public class MainPresenterImpl extends MainContract.Presenter {
         mModel.getWeatherInfo().subscribe(new Subscriber<WeatherBean>() {
             @Override
             public void onCompleted() {
+                handler.sendEmptyMessageDelayed(1005, 10800000);//请求天气失败以后,每三小时请求一次天气
             }
 
             @Override
             public void onError(Throwable e) {
+                handler.sendEmptyMessageDelayed(1005, 10800000);//请求天气成功以后,每三小时请求一次天气
             }
 
             @Override
@@ -141,6 +143,9 @@ public class MainPresenterImpl extends MainContract.Presenter {
 //            }
             if (msg.what == 1004) {//收到检查新版本的消息
                 checkNewVersion();//继续检查是否有新版本
+            }
+            if (msg.what == 1005) {//请求天气
+                mModel.getWeatherInfo();
             }
         }
     };

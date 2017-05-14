@@ -65,4 +65,9 @@ public interface ApiService {
     //手机版本更新/app/version/downOne
     @GET("version/downOne")
     Observable<NoticeBean> downMobileNewVersion();
+
+    //根据设备ID 查询门禁卡列表  /app/equipment/regist  参数:equipmentId
+    //手机版本更新/app/version/downOne
+    @GET("version/downOne")
+    Observable<NoticeBean> getCardList(@Query("equipmentId") String equipmentId);
 }
