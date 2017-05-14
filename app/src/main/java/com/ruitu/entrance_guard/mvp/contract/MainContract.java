@@ -4,9 +4,12 @@ import com.beanu.arad.base.BaseModel;
 import com.beanu.arad.base.BasePresenter;
 import com.beanu.arad.base.BaseView;
 import com.ruitu.entrance_guard.model.bean.Card;
+import com.ruitu.entrance_guard.model.bean.DeviceBean;
 import com.ruitu.entrance_guard.model.bean.NoticeBean;
 import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.model.bean.WeatherBean;
+
+import java.util.List;
 
 import rx.Observable;
 
@@ -43,9 +46,11 @@ public interface MainContract {
 
         public abstract boolean isMenjinConnectSuccess();//是否连接成功(小于0,连接失败)
 
-        public abstract void submitDeviceInfo();//提交设备信息到服务端
+        public abstract void getDeviceIdByMac();//根据设备mac获取设备id
 
-        public abstract void getCardList();//获取所有能用的卡
+        public abstract void getCardList(String deviceId);//获取所有能用的卡
+
+        public abstract boolean isCardCanUse(String cardNum);////判断卡号是否可用
     }
 
     public interface Model extends BaseModel {
@@ -55,8 +60,12 @@ public interface MainContract {
 
         Observable<UpdateVersionBean> checkNewVersion();//获取版本更新信息
 
-        Observable<BaseModel> submitDeviceInfo();//提交设备信息都服务端
+        Observable<DeviceBean> getDeviceIdByMac();//根据设备mac获取设备id
 
-        Observable<Card> getCardList();//获取所有能用的卡
+        Observable<List<Card>> getCardList(String equipmentId);//获取所有能用的卡
+
+        void insertData(String content);//插入数据
+
+        boolean isCardCanUse(String cardNum);////判断卡号是否可用
     }
 }

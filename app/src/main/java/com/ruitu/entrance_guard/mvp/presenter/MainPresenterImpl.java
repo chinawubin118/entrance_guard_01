@@ -6,13 +6,18 @@ import android.util.Log;
 
 import com.beanu.arad.Arad;
 import com.beanu.arad.utils.AndroidUtil;
+import com.ruitu.entrance_guard.model.bean.Card;
+import com.ruitu.entrance_guard.model.bean.DeviceBean;
 import com.ruitu.entrance_guard.model.bean.NoticeBean;
 import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.model.bean.WeatherBean;
 import com.ruitu.entrance_guard.mvp.contract.MainContract;
+import com.ruitu.entrance_guard.support.utils.SharedPrefsUtil;
 import com.ruitu.entrance_guard.support.utils.TimeUtils;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import cn.semtec.www.epcontrol.EPControl;
 import rx.Subscriber;
@@ -126,6 +131,54 @@ public class MainPresenterImpl extends MainContract.Presenter {
         return EPControl.EpControlConnect() >= 0;
     }
 
+    @Override
+    public void getDeviceIdByMac() {//根据mac获取设备id
+        mModel.getDeviceIdByMac().subscribe(new Subscriber<DeviceBean>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(DeviceBean deviceBean) {
+                if (null != deviceBean && null != deviceBean.getData()) {
+                    DeviceBean.DataBean dataBean = deviceBean.getData();
+                    getCardList(dataBean.getId());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getCardList(String deviceId) {
+        mModel.getCardList(deviceId)
+                .subscribe(new Subscriber<List<Card>>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(List<Card> cards) {
+                        String cardNumbers = getStringByList(cards);
+                        Log.i("wubin", "存储的cardNumbers = " + cardNumbers);
+                        SharedPrefsUtil.putValue(Arad.app,"card_number",cardNumbers);
+                        mModel.insertData(cardNumbers);
+                    }
+                });
+    }
+
+    @Override
+    public boolean isCardCanUse(String cardNum) {
+        return mModel.isCardCanUse(cardNum);
+    }
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -165,5 +218,14 @@ public class MainPresenterImpl extends MainContract.Presenter {
         message.obj = noticeBean;
         message.what = 1002;
         handler.sendMessageDelayed(message, 1000);
+    }
+
+    public String getStringByList(List<Card> cardList) {
+        if (null == cardList || cardList.size() == 0) return "";
+        StringBuilder sb = new StringBuilder("");
+        for (int i = 0; i < cardList.size(); i++) {
+            sb.append(cardList.get(i).getNumber() + ",");
+        }
+        return sb.toString();
     }
 }

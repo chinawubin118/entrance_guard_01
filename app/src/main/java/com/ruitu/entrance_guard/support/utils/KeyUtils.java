@@ -18,7 +18,7 @@ public class KeyUtils {
     public static final int JING_HAO_JIAN = 18;//井号键
     public static final int DOOR_IS_OPENED = 101;//门开了
 
-    public static final long AUTO_LOCK_TIME = 5000;//开门后自动锁门时间,测试设置为5s
+    public static final long AUTO_LOCK_TIME = 2000;//开门后自动锁门时间,测试设置为5s
 
     public static String getKeyStrByKeycode(int keyCode) {
         switch (keyCode) {

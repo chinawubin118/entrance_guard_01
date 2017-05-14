@@ -30,6 +30,8 @@ import com.ruitu.entrance_guard.support.utils.UiUtils;
 import com.ruitu.entrance_guard.support.utils.WeatherUtils;
 import com.ruitu.entrance_guard.ui.adapter.AdAdapter;
 
+import java.math.BigInteger;
+
 import cn.semtec.www.epcontrol.EPControl;
 import cn.semtec.www.semteccardreaderlib.SerialPortActivity;
 
@@ -90,6 +92,8 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         mPresenter.getWeatherInfo();//获取心知天气信息
         mPresenter.getNotice();//获取公告
         mPresenter.checkNewVersion();//检查新版本
+        mPresenter.getDeviceIdByMac(); //根据mac获取设备id
+
         handler.sendEmptyMessageDelayed(1005, 2000);//延迟2s检测是否连接成功
     }
 
@@ -142,10 +146,19 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
 
                 //下面两个应该是收到刷卡的数据的时候执行
                 case 0:
-                    mPresenter.unlock();//执行解锁
-                    MyToast.showShortToast(mContext, "刷卡开门成功!");
-                    KeyUtils.playVoiceByKeycode(KeyUtils.DOOR_IS_OPENED, mContext);
-                    handler.sendEmptyMessageDelayed(1006, KeyUtils.AUTO_LOCK_TIME);
+                    try {
+                        String newNum = new BigInteger(strToDisp, 16).toString();
+                        if (mPresenter.isCardCanUse(newNum)) {
+                            mPresenter.unlock();//执行解锁
+                            MyToast.showShortToast(mContext, "刷卡开门成功!");
+                            KeyUtils.playVoiceByKeycode(KeyUtils.DOOR_IS_OPENED, mContext);
+                            handler.sendEmptyMessageDelayed(1006, KeyUtils.AUTO_LOCK_TIME);
+                        } else {
+                            MyToast.showShortToast(mContext, "开门失败!");
+                        }
+                    } catch (Exception e) {
+                        MyToast.showShortToast(mContext, "开门失败!");
+                    }
                     break;
                 case 1:
 //                    tv_card.setText("请读卡");

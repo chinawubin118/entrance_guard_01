@@ -2,10 +2,14 @@ package com.ruitu.entrance_guard.model.api;
 
 import com.google.gson.JsonObject;
 import com.ruitu.entrance_guard.model.PageModel;
+import com.ruitu.entrance_guard.model.bean.Card;
+import com.ruitu.entrance_guard.model.bean.DeviceBean;
 import com.ruitu.entrance_guard.model.bean.NoticeBean;
 import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.model.bean.User2;
 import com.ruitu.entrance_guard.model.bean.WeatherBean;
+
+import java.util.List;
 
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -66,8 +70,12 @@ public interface ApiService {
     @GET("version/downOne")
     Observable<NoticeBean> downMobileNewVersion();
 
-    //根据设备ID 查询门禁卡列表  /app/equipment/regist  参数:equipmentId
+    //根据设备mac获取设备id  equipment/login
+    @GET("equipment/login")
+    Observable<DeviceBean> getDeviceIdByMac(@Query("mac") String mac);
+
+    //根据设备ID 查询门禁卡列表  /app/equipment/findCardByEqu  参数:equipmentId
     //手机版本更新/app/version/downOne
-    @GET("version/downOne")
-    Observable<NoticeBean> getCardList(@Query("equipmentId") String equipmentId);
+    @GET("equipment/findCardByEqu")
+    Observable<List<Card>> getCardList(@Query("equipmentId") String equipmentId);
 }
