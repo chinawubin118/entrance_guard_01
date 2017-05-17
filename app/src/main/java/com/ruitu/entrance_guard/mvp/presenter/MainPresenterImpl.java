@@ -146,6 +146,7 @@ public class MainPresenterImpl extends MainContract.Presenter {
             public void onNext(DeviceBean deviceBean) {
                 if (null != deviceBean && null != deviceBean.getData()) {
                     DeviceBean.DataBean dataBean = deviceBean.getData();
+                    SharedPrefsUtil.putValue(Arad.app, "door_id",dataBean.getId());
                     getCardList(dataBean.getId());
                 }
             }
