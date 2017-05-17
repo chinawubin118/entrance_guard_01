@@ -194,8 +194,9 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
             try {
                 initWebSocket();
                 boolean isOpen = SocketManager.webSocket.isOpen();
-                SocketManager.register(SharedPrefsUtil.getValue(Arad.app, "door_id", ""));
-                if(!isOpen){
+                if(isOpen){
+                    SocketManager.register(SharedPrefsUtil.getValue(Arad.app, "door_id", ""));
+                }else{
                     initWebSocket();
                 }
                 Log.i(TAG, "run: 服务器在线状态:"  + isOpen);
