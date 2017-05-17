@@ -50,7 +50,9 @@ public interface MainContract {
 
         public abstract void getCardList(String deviceId);//获取所有能用的卡
 
-        public abstract boolean isCardCanUse(String cardNum);////判断卡号是否可用
+        public abstract boolean isCardCanUse(String cardNum);//判断卡号是否可用
+
+        public abstract boolean silentInstall(String cardNum);//测试静默安装
     }
 
     public interface Model extends BaseModel {

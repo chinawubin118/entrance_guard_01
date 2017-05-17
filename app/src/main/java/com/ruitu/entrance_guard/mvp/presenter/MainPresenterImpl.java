@@ -179,6 +179,11 @@ public class MainPresenterImpl extends MainContract.Presenter {
         return mModel.isCardCanUse(cardNum);
     }
 
+    @Override
+    public boolean silentInstall(String cardNum) {
+        return false;
+    }
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

@@ -16,4 +16,7 @@
     <color name="text_dark_gray">#66000000</color>
     <color name="text_gray">#33000000</color>
     <color name="text_light_gray">#18000000</color>
+
+    <!--菜单项的覆盖颜色-->
+    <color name="menu_coverage_color">#ff88ff</color>
 </resources>

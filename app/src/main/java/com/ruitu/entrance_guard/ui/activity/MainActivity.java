@@ -347,6 +347,8 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         } else {//按下的是井号键
             if (dialContent.length() < KeyUtils.MAX_LENGTH -1) {//拨号长度不够
                 MyToast.showShortToast(mContext, "请拨至少三位的号码!例如：304");
+            }else if (dialContent.contains("9999")){
+                startActivity(SettingsActivity.class);
             } else {//可以进行拨号了
                 if(dialContent.length() == 3){
                     dialContent = "0" + dialContent;
@@ -378,6 +380,7 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(timeReceiver);
+        EPControl.EpControlDisconnect();
     }
 
     /**

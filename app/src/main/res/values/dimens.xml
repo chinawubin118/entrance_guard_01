@@ -1,3 +1,5 @@
 <resources>
     <dimen name="online_state_size">16dp</dimen>
+
+    <dimen name="menu_textsize">30sp</dimen>
 </resources>

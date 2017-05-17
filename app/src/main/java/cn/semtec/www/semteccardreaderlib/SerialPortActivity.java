@@ -91,26 +91,26 @@ public abstract class SerialPortActivity<T extends BasePresenter, E extends Base
                             cardDataBufSize = 0;
                             //verify header
                             boolean readyToSend = true;
-                            for(int i =0;i<crp.header.length;i++) {
-                                if (cardDateBuf[i] != crp.header[i]) {
-                                    Log.i(TAG,"header is not match");
-                                    readyToSend = false;
-                                }
-                            }
-                            //verify ender
-                            if (cardDateBuf[crp.len-1] != crp.ender) {
-                                Log.i(TAG,"Ender is not match");
-                                readyToSend = false;
-
-                            }
-                            byte checkSum = 0;
-                            for(int i =0;i< crp.datalen;i++) {
-                                checkSum+=cardDateBuf[crp.header.length+crp.typelen+i];
-                            }
-                            if(checkSum != cardDateBuf[crp.len-2]) {
-                                Log.i(TAG,"checkSum is not match");
-                                readyToSend = false;
-                            }
+//                            for(int i =0;i<crp.header.length;i++) {
+//                                if (cardDateBuf[i] != crp.header[i]) {
+//                                    Log.i(TAG,"header is not match");
+//                                    readyToSend = false;
+//                                }
+//                            }
+//                            //verify ender
+//                            if (cardDateBuf[crp.len-1] != crp.ender) {
+//                                Log.i(TAG,"Ender is not match");
+//                                readyToSend = false;
+//
+//                            }
+//                            byte checkSum = 0;
+//                            for(int i =0;i< crp.datalen;i++) {
+//                                checkSum+=cardDateBuf[crp.header.length+crp.typelen+i];
+//                            }
+//                            if(checkSum != cardDateBuf[crp.len-2]) {
+//                                Log.i(TAG,"checkSum is not match");
+//                                readyToSend = false;
+//                            }
                             if(readyToSend == true) {
                                 Log.i(TAG,"Sending card serial number");
                                 byte[] cardSerialNumber = new byte[crp.datalen+crp.typelen];

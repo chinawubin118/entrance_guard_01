@@ -2,6 +2,7 @@ package com.ruitu.entrance_guard.support.utils;
 
 import android.content.Context;
 
+import com.beanu.arad.Arad;
 import com.ruitu.entrance_guard.R;
 
 import cn.semtec.www.epcontrol.Util;
@@ -18,7 +19,17 @@ public class KeyUtils {
     public static final int JING_HAO_JIAN = 18;//井号键
     public static final int DOOR_IS_OPENED = 101;//门开了
 
-    public static final long AUTO_LOCK_TIME = 2000;//开门后自动锁门时间,测试设置为5s
+    public static long AUTO_LOCK_TIME = getRealDelayTime();//开门后自动锁门时间,测试设置为5s
+
+    private static long getRealDelayTime() {
+        int time = 2;
+        try {
+            time = SharedPrefsUtil.getValue(Arad.app, "delay_time_progress", 1);
+        } catch (Exception e) {
+            return 2000L;
+        }
+        return time * 1000L / 2;
+    }
 
     public static String getKeyStrByKeycode(int keyCode) {
         switch (keyCode) {

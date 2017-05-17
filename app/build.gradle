@@ -33,10 +33,14 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    compile project(':arad')
+
+//    tinker的核心库
+//    compile('com.tencent.tinker:tinker-android-lib:1.7.9')
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-
     compile 'org.java-websocket:java-websocket:1.3.3'
-    compile project(':arad')
+    testCompile 'junit:junit:4.12'
 }
+//apply plugin: 'com.tencent.tinker.patch'

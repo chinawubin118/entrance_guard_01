@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ruitu.entrance_guard.ui.activity.AudioSettingActivity">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <LinearLayout
+            android:id="@+id/ll_seek_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="30dp"
+                android:text="音量-"
+                android:textColor="@color/text_dark_gray"
+                android:textSize="36sp" />
+
+            <android.support.v7.widget.AppCompatSeekBar
+                android:id="@+id/seek_bar"
+                android:layout_width="500dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:maxHeight="40dp"
+                android:minHeight="40dp"
+                android:progressDrawable="@drawable/progressbar2"
+                android:thumb="@drawable/progress_thum_small_shape" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="30dp"
+                android:text="音量+"
+                android:textColor="@color/text_dark_gray"
+                android:textSize="36sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_seek_bar"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="60dp"
+            android:text="按4,6调节音量,按5退出"
+            android:textColor="@color/text_dark_gray"
+            android:textSize="26sp" />
+    </RelativeLayout>
+</RelativeLayout>
