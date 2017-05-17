@@ -110,7 +110,7 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
 
         handler.sendEmptyMessageDelayed(1005, 2000);//延迟2s检测是否连接成功
 
-        initWebSocket();
+        //initWebSocket();
         handlerCheckSocket.postDelayed(runnableCheckSocket,SOCKET_CHECK_TIME);
     }
 
@@ -192,7 +192,9 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         public void run() {
             // handler自带方法实现定时器
             try {
+                initWebSocket();
                 boolean isOpen = SocketManager.webSocket.isOpen();
+                SocketManager.register(SharedPrefsUtil.getValue(Arad.app, "door_id", ""));
                 if(!isOpen){
                     initWebSocket();
                 }
