@@ -28,7 +28,7 @@ public class DelayLockSettingActivity extends AppCompatActivity {
         tv_delay_time = (TextView) findViewById(R.id.tv_delay_time);
 
         seek_bar.setMax(10);//最大是10
-        seek_bar.setProgress(SharedPrefsUtil.getValue(this, "delay_time_progress", 1));
+        seek_bar.setProgress(SharedPrefsUtil.getValue(this, "delay_time_progress", 2));
 
         setTimeText();
     }

@@ -44,7 +44,7 @@ public interface MainContract {
 
         public abstract void lock();//上锁:直接调用底层上锁
 
-        public abstract boolean isMenjinConnectSuccess();//是否连接成功(小于0,连接失败)
+//        public abstract boolean isMenjinConnectSuccess();//是否连接成功(小于0,连接失败)
 
         public abstract void getDeviceIdByMac();//根据设备mac获取设备id
 

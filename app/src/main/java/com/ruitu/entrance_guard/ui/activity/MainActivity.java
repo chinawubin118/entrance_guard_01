@@ -111,7 +111,7 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         handler.sendEmptyMessageDelayed(1005, 2000);//延迟2s检测是否连接成功
 
         //initWebSocket();
-        handlerCheckSocket.postDelayed(runnableCheckSocket,SOCKET_CHECK_TIME);
+        handlerCheckSocket.postDelayed(runnableCheckSocket, SOCKET_CHECK_TIME);
     }
 
     //初始化并注册timeReceiver
@@ -153,10 +153,10 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
                     sendEmptyMessageDelayed(1001, Constant.TIME_UNIT);
                     break;
                 case 1005:
-                    if (mPresenter.isMenjinConnectSuccess()) {//门禁连接成功
-                        MyToast.showShortToast(mContext, "连接成功");
-                        setOnlineState(1);
-                    }
+//                    if (mPresenter.isMenjinConnectSuccess()) {//门禁连接成功
+//                        MyToast.showShortToast(mContext, "连接成功");
+//                        setOnlineState(1);
+//                    }
                     break;
                 case 1006:
                     EPControl.EpControlLock();//开锁后自动锁门
@@ -170,7 +170,7 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
                             mPresenter.unlock();//执行解锁
                             MyToast.showShortToast(mContext, "刷卡开门成功!");
                             KeyUtils.playVoiceByKeycode(KeyUtils.DOOR_IS_OPENED, mContext);
-                            handler.sendEmptyMessageDelayed(1006, KeyUtils.AUTO_LOCK_TIME);
+                            handler.sendEmptyMessageDelayed(1006, getRealDelayTime());
                         } else {
                             MyToast.showShortToast(mContext, "开门失败!");
                         }
@@ -195,13 +195,13 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
                 initWebSocket();
                 boolean isOpen = SocketManager.webSocket.isOpen();
                 SocketManager.register(SharedPrefsUtil.getValue(Arad.app, "door_id", ""));
-                if(!isOpen){
+                if (!isOpen) {
                     initWebSocket();
                 }
-                Log.i(TAG, "run: 服务器在线状态:"  + isOpen);
+                Log.i(TAG, "run: 服务器在线状态:" + isOpen);
             } catch (Exception e) {
                 System.out.println("正在尝试重新链接...");
-            }finally {
+            } finally {
                 handlerCheckSocket.postDelayed(this, SOCKET_CHECK_TIME);
             }
 
@@ -347,12 +347,12 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
             String keyStr = KeyUtils.getKeyStrByKeycode(keyCode);
             showPressedKeys(keyStr);
         } else {//按下的是井号键
-            if (dialContent.length() < KeyUtils.MAX_LENGTH -1) {//拨号长度不够
+            if (dialContent.length() < KeyUtils.MAX_LENGTH - 1) {//拨号长度不够
                 MyToast.showShortToast(mContext, "请拨至少三位的号码!例如：304");
-            }else if (dialContent.contains("9999")){
+            } else if (dialContent.contains("9999")) {
                 startActivity(SettingsActivity.class);
             } else {//可以进行拨号了
-                if(dialContent.length() == 3){
+                if (dialContent.length() == 3) {
                     dialContent = "0" + dialContent;
                 }
                 MyToast.showShortToast(mContext, "开始呼叫" + dialContent + ".....");
@@ -376,13 +376,29 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
         super.onResume();
         UiUtils.hideBottomUIMenu(this);//不显示底部虚拟按键
         setTimeToView(TimeUtils.getHourAndMinute(), TimeUtils.getDate(), TimeUtils.getWeekOfDate());
+        EPControl.EpControlConnect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EPControl.EpControlDisconnect();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(timeReceiver);
-        EPControl.EpControlDisconnect();
+    }
+
+    private long getRealDelayTime() {
+        int time = 2;
+        try {
+            time = SharedPrefsUtil.getValue(Arad.app, "delay_time_progress", 2);
+        } catch (Exception e) {
+            return 2000L;
+        }
+        return time * 1000L / 2;
     }
 
     /**
@@ -404,22 +420,22 @@ public class MainActivity extends SerialPortActivity<MainPresenterImpl, MainMode
                 public void onMessage(String s) {
                     Log.i(TAG, "onMessage: " + s);
                     String[] managerArr = s.split(",");
-                    if(managerArr.length > 0){
-                        if(managerArr.length == 2 && managerArr[0].equals("tip") ){
+                    if (managerArr.length > 0) {
+                        if (managerArr.length == 2 && managerArr[0].equals("tip")) {
                             String[] registerArr = managerArr[1].split(":");
-                            if(registerArr.length == 2 && registerArr[0].equals("register")){ //用户注册（反馈）
+                            if (registerArr.length == 2 && registerArr[0].equals("register")) { //用户注册（反馈）
                                 String status = registerArr[1];
                                 Log.i(TAG, "onMessage: " + status);
                             }
                         }
-                        if(managerArr.length == 2 && managerArr[0].equals("manager") ){
+                        if (managerArr.length == 2 && managerArr[0].equals("manager")) {
                             String[] registerArr = managerArr[1].split(":");
-                            if(registerArr.length > 0 && registerArr[0].equals("openDoor")){ //开门
+                            if (registerArr.length > 0 && registerArr[0].equals("openDoor")) { //开门
                                 try {
                                     mPresenter.unlock();//执行解锁
                                     MyToast.showShortToast(mContext, "APP开门成功!");
                                     KeyUtils.playVoiceByKeycode(KeyUtils.DOOR_IS_OPENED, mContext);
-                                    handler.sendEmptyMessageDelayed(1006, KeyUtils.AUTO_LOCK_TIME);
+                                    handler.sendEmptyMessageDelayed(1006, getRealDelayTime());
                                 } catch (Exception e) {
                                     MyToast.showShortToast(mContext, "开门失败!");
                                 }

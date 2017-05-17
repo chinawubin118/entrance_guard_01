@@ -6,15 +6,22 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import com.beanu.arad.utils.AndroidUtil;
+import com.ruitu.entrance_guard.Constant;
 import com.ruitu.entrance_guard.R;
+import com.ruitu.entrance_guard.model.api.APIRetrofit;
+import com.ruitu.entrance_guard.model.bean.UpdateVersionBean;
 import com.ruitu.entrance_guard.mvp.contract.SettingsContract;
 import com.ruitu.entrance_guard.mvp.model.SettingsModelImpl;
 import com.ruitu.entrance_guard.mvp.presenter.SettingsPresenterImpl;
+import com.ruitu.entrance_guard.support.updateversion.UpdateChecker;
 import com.ruitu.entrance_guard.support.utils.KeyUtils;
 import com.ruitu.entrance_guard.support.utils.MyToast;
 import com.ruitu.entrance_guard.support.utils.UiUtils;
 
 import cn.semtec.www.semteccardreaderlib.SerialPortActivity;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class SettingsActivity extends SerialPortActivity<SettingsPresenterImpl, SettingsModelImpl> implements SettingsContract.View {
     private View menu_1_coverage, menu_2_coverage, menu_3_coverage, menu_4_coverage, menu_5_coverage, menu_6_coverage;//菜单的前景(还是背景啊?)
@@ -52,21 +59,37 @@ public class SettingsActivity extends SerialPortActivity<SettingsPresenterImpl, 
 
         if (TextUtils.equals("5", keyStr)) {//相当于确定
             switch (currMenuStatus) {
-                case STATUS_MENU_1:
+                case STATUS_MENU_1://音量
                     startActivity(AudioSettingActivity.class);
                     break;
-                case STATUS_MENU_2:
+                case STATUS_MENU_2://当前版本
                     MyToast.showShortToast(getApplication(), "当前版本:V" + AndroidUtil.getVerName(getApplication()));
                     break;
-                case STATUS_MENU_3:
+                case STATUS_MENU_3://版本更新
+                    APIRetrofit.getDefault().checkMenjinNewVersion().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Subscriber<UpdateVersionBean>() {
+                                @Override
+                                public void onCompleted() {
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                }
+
+                                @Override
+                                public void onNext(UpdateVersionBean updateVersionBean) {
+                                    UpdateChecker.checkForNotification(SettingsActivity.this, "版本更新",
+                                            Constant.BASE_URL + updateVersionBean.getUrl(), updateVersionBean.getCode());
+                                }
+                            });
                     break;
-                case STATUS_MENU_4:
+                case STATUS_MENU_4://延迟锁
                     startActivity(DelayLockSettingActivity.class);
                     break;
                 case STATUS_MENU_5:
                     MyToast.showShortToast(getApplication(), "敬请期待...");
                     break;
-                case STATUS_MENU_6:
+                case STATUS_MENU_6://退出
                     onBackPressed();
                     break;
             }

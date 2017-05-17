@@ -19,7 +19,7 @@ public class MyApplication extends AradApplication {
         weatherManager.initWithKeyAndUserId("tyc5m2krtykod7bw","U0422597AB");
 
         disableCrashHandler();
-        EPControl.EpControlConnect();
+//        EPControl.EpControlConnect();
     }
 
     @Override

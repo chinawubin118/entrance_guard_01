@@ -127,11 +127,6 @@ public class MainPresenterImpl extends MainContract.Presenter {
     }
 
     @Override
-    public boolean isMenjinConnectSuccess() {
-        return EPControl.EpControlConnect() >= 0;
-    }
-
-    @Override
     public void getDeviceIdByMac() {//根据mac获取设备id
         mModel.getDeviceIdByMac().subscribe(new Subscriber<DeviceBean>() {
             @Override
